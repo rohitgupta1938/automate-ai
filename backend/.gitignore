@@ -1,0 +1,39 @@
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment variables (IMPORTANT)
+.env
+.env.*
+!.env.example
+
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Testing
+coverage/
+
+# Cache
+.cache/
+
+
+# Firebase credentials
+serviceAccountKey.json
+**/serviceAccountKey.json
