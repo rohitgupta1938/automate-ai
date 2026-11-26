@@ -1,6 +1,6 @@
 import { getAuth } from "firebase-admin/auth";
-import { app } from "../config/firebase";
-import User from "../models/user.model";
+import { app } from "../config/firebase.js";
+import User from "../models/user.model.js";
 export const login = async (req, res) => {
   try {
     const { token: firebaseToken } = req.body;
@@ -48,14 +48,23 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     const token = req.cookie.token;
-    res.clearCookie("token",{
+    res.clearCookie("token", {
       httpOnly: "true",
       secure: false,
       sameSite: "strict",
       maxAge: "7*24*60*60*1000",
     });
-    return res.status(200).json({message:"logout successfully"})
+    return res.status(200).json({ message: "logout successfully" });
   } catch (error) {
     return res.status(500).json({ message: `logout error: ${error}` });
+  }
+};
+
+export const me = async (req, res) => {
+  try {
+    const user = req.user;
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ message: "me error", error });
   }
 };
