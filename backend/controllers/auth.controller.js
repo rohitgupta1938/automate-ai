@@ -1,22 +1,23 @@
 import { getAuth } from "firebase-admin/auth";
 import { app } from "../config/firebase.js";
 import User from "../models/user.model.js";
+import jwt from "jsonwebtoken";
 export const login = async (req, res) => {
   try {
-    const { token: firebaseToken } = req.body;
+    const { token: firebaseToken, name: fallbackName } = req.body;
 
     if (!firebaseToken) {
       return res.status(400).json({ message: "token not found!" });
     }
 
-    const decoded = await getAuth(app).verifyIdToken(token);
+    const decoded = await getAuth(app).verifyIdToken(firebaseToken);
     const user = await User.findOneAndUpdate(
       { firebaseUid: decoded.uid },
       {
         $set: {
-          name: decoded.name,
+          name: decoded.name || fallbackName || "User",
           email: decoded.email,
-          profilePicture: decoded.profile,
+          profilePicture: decoded.profile || decoded.picture || "",
         },
         $setOnInsert: {
           firebaseUid: decoded.uid,
@@ -35,12 +36,11 @@ export const login = async (req, res) => {
       httpOnly: "true",
       secure: false,
       sameSite: "strict",
-      maxAge: "7*24*60*60*1000",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: `logout error: ${error}` });
   }
 };
@@ -52,7 +52,7 @@ export const logout = async (req, res) => {
       httpOnly: "true",
       secure: false,
       sameSite: "strict",
-      maxAge: "7*24*60*60*1000",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.status(200).json({ message: "logout successfully" });
   } catch (error) {
